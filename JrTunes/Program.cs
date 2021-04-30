@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace JrTunes
 {
@@ -12,8 +13,50 @@ namespace JrTunes
         {
             //SelectSimplesLinq();
 
-            SelectComJoinLinq();
+            //SelectComJoinLinq();
 
+            //Select simples no xml
+
+            SelectNoXMLLinq();
+
+        }
+
+        private static void SelectNoXMLLinq()
+        {
+            XElement root = XElement.Load(@"C:\Users\jairm\Downloads\"
+                                        + @"utilizando-linq\JrTunes\Data\AluraTunes.xml");
+
+            var query = from g in root
+                        .Element("Generos")
+                        .Elements("Genero")
+                        select g;
+
+            foreach (var genero in query)
+            {
+                Console.WriteLine($"{genero.Element("GeneroId").Value} - " +
+                                  $"{genero.Element("Nome").Value}");
+            }
+
+
+            Console.WriteLine("\n===============================\n");
+
+
+            //Select com join no xml
+
+            var query2 = from g in root.Element("Generos").Elements("Genero")
+                         join m in root.Element("Musicas").Elements("Musica")
+                            on g.Element("GeneroId").Value
+                            equals m.Element("GeneroId").Value
+                         select new
+                         {
+                             Genero = g.Element("Nome").Value,
+                             Musica = m.Element("Nome").Value
+                         };
+
+            foreach (var item in query2)
+            {
+                Console.WriteLine("{0} - {1}", item.Musica, item.Genero);
+            }
         }
 
         private static void SelectComJoinLinq()
