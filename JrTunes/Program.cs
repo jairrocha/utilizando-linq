@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JrTunes.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,8 +18,76 @@ namespace JrTunes
 
             //Select simples no xml
 
-            SelectNoXMLLinq();
+            //SelectNoXMLLinq();
 
+            SelectToEntities();
+
+        }
+
+        private static void SelectToEntities()
+        {
+
+            /*Preparando o ambiente
+             * 
+             * 1) Na pasta Data: ADD > New item > Data > Service-based Database
+             * 2) No BD criado: Em tables executar o script salvo em data: AluraTunes.sql
+             * 3) Na pasta Data: ADD : New item > Data > ADO.NET Entity Data Model >
+             * Selecionar 'EF Designer form database' > Next > Selecionar o BD >
+             * Next > Next > Selecionar tables, marque como o Checkbox plurarize or....>
+             * Finish.
+             *
+             */
+
+
+            using (var contexto = new JrTunesEntities())
+            {
+
+                /*
+                 * Consulta simples
+                 */
+
+                var query = from g in contexto.Generos
+                            select g;
+
+                foreach (var genero in query)
+                {
+                    Console.WriteLine("{0} - {1}", genero.GeneroId, genero.Nome);
+                }
+
+                Console.WriteLine("\n----------------------------\n");
+
+
+                /*
+                 * A consulta abaixo embora pareça está trazendo para
+                 * a memória toda informação e depois filtrando os dez primeiros 
+                 * registros, na verdade está apenas trazendo 10 registros para 
+                 * aplicação, como podemos visualizar isso???? 
+                 * Basta visualizamos o log no console atráves do 
+                 * comando: 'contexto.Database.Log = Console.WriteLine;'
+                 *                 
+                 */
+
+                /*exibe o comando que executado no BD*/
+                contexto.Database.Log = Console.WriteLine;
+
+
+                /* Consulta com Join e limitação de exibição (TOP 10)*/
+                var query2 = from g in contexto.Generos
+                             join f in contexto.Faixas
+                             on g.GeneroId equals f.GeneroId
+                             select new { f, g };
+
+                query2 = query2.Take(10);
+
+
+                foreach (var item in query2)
+                {
+                    Console.WriteLine("{0} \t {1}", item.f.Nome, item.g.Nome);
+                }
+
+                Console.ReadKey();
+
+            }
         }
 
         private static void SelectNoXMLLinq()
