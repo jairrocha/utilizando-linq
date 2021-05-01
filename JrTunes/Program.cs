@@ -85,9 +85,30 @@ namespace JrTunes
                     Console.WriteLine("{0} \t {1}", item.f.Nome, item.g.Nome);
                 }
 
-                Console.ReadKey();
+               
 
+
+                Console.WriteLine("\n----------------------------\n");
+
+
+                //Select com contains
+
+                var textoBusca = "Led";
+
+                var query3 = from a in contexto.Artistas
+                             where a.Nome.Contains(textoBusca)
+                             select a;
+
+                
+
+                foreach (var artista in query3)
+                {
+                    Console.WriteLine("{1} - {0}", artista.ArtistaId, artista.Nome);
+                }
+
+                Console.ReadKey();
             }
+
         }
 
         private static void SelectNoXMLLinq()
