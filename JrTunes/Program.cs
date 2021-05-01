@@ -106,8 +106,22 @@ namespace JrTunes
                     Console.WriteLine("{1} - {0}", artista.ArtistaId, artista.Nome);
                 }
 
+
+                //Realizando a consulta acima de outra forma
+                var query4 = contexto.Artistas.Where(a => a.Nome.Contains(textoBusca));
+
+                foreach (var artista in query4)
+                {
+                    Console.WriteLine("{1} - {0}", artista.ArtistaId, artista.Nome);
+                }
+
+
                 Console.ReadKey();
+
+
             }
+
+            
 
         }
 
