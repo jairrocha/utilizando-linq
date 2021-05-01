@@ -20,11 +20,11 @@ namespace JrTunes
 
             //SelectNoXMLLinq();
 
-            SelectToEntities();
+            SelectToEntitiesMain();
 
         }
 
-        private static void SelectToEntities()
+        private static void SelectToEntitiesMain()
         {
 
             /*Preparando o ambiente
@@ -41,88 +41,170 @@ namespace JrTunes
 
             using (var contexto = new JrTunesEntities())
             {
+                //SelectToEntitiesConsultaSimples(contexto);
 
-                /*
-                 * Consulta simples
-                 */
+                //SelectToEntitiesConsultaTop10(contexto);
 
-                var query = from g in contexto.Generos
-                            select g;
+                //SelectToEntitiesContains(contexto);
 
-                foreach (var genero in query)
-                {
-                    Console.WriteLine("{0} - {1}", genero.GeneroId, genero.Nome);
-                }
-
-                Console.WriteLine("\n----------------------------\n");
+                //SelectToEntitiesConsultaComJoin_E_DepoisMesmaConsultaSemJoin(contexto);
 
 
-                /*
-                 * A consulta abaixo embora pareça está trazendo para
-                 * a memória toda informação e depois filtrando os dez primeiros 
-                 * registros, na verdade está apenas trazendo 10 registros para 
-                 * aplicação, como podemos visualizar isso???? 
-                 * Basta visualizamos o log no console atráves do 
-                 * comando: 'contexto.Database.Log = Console.WriteLine;'
-                 *                 
-                 */
+                //Traz todos os album do Led Zeppelin
+                Select_NomeArista_E_NomeAlbum(contexto, "Led Zeppelin", "");
 
-                /*exibe o comando que executado no BD*/
-                contexto.Database.Log = Console.WriteLine;
+                Console.WriteLine("\n=========================================\n");
 
-
-                /* Consulta com Join e limitação de exibição (TOP 10)*/
-                var query2 = from g in contexto.Generos
-                             join f in contexto.Faixas
-                             on g.GeneroId equals f.GeneroId
-                             select new { f, g };
-
-                query2 = query2.Take(10);
-
-
-                foreach (var item in query2)
-                {
-                    Console.WriteLine("{0} \t {1}", item.f.Nome, item.g.Nome);
-                }
-
-               
-
-
-                Console.WriteLine("\n----------------------------\n");
-
-
-                //Select com contains
-
-                var textoBusca = "Led";
-
-                var query3 = from a in contexto.Artistas
-                             where a.Nome.Contains(textoBusca)
-                             select a;
-
+                //Traz todos os album do Led Zeppelin que contém 'Graffiti' no nome album'
+                Select_NomeArista_E_NomeAlbum(contexto, "Led Zeppelin", "Graffiti");
                 
-
-                foreach (var artista in query3)
-                {
-                    Console.WriteLine("{1} - {0}", artista.ArtistaId, artista.Nome);
-                }
-
-
-                //Realizando a consulta acima de outra forma
-                var query4 = contexto.Artistas.Where(a => a.Nome.Contains(textoBusca));
-
-                foreach (var artista in query4)
-                {
-                    Console.WriteLine("{1} - {0}", artista.ArtistaId, artista.Nome);
-                }
-
-
-                Console.ReadKey();
 
 
             }
 
-            
 
+
+        }
+
+        private static void Select_NomeArista_E_NomeAlbum(JrTunesEntities contexto, string nomeArtista, string nomeAlbum)
+        {
+            /*Função:
+             * Traz faixa a partir do nome do artista, se o nome do album estiver preenchido filtra o Album
+             */
+        
+
+            var query7 = from f in contexto.Faixas
+                         where f.Album.Artista.Nome.Contains(nomeArtista)
+                         select f;
+
+
+            if (!string.IsNullOrEmpty(nomeAlbum))
+            {
+
+                query7 = query7.Where(q => q.Album.Titulo.Contains(nomeAlbum));
+
+            }
+
+
+            foreach (var faixa in query7)
+            {
+                Console.WriteLine("{0}\t{1}", faixa.Album.Titulo.PadRight(40), faixa.Nome);
+            }
+        }
+
+        private static void SelectToEntitiesConsultaComJoin_E_DepoisMesmaConsultaSemJoin(JrTunesEntities contexto)
+        {
+            //Trazendo dados da entidades: 'Artista' e 'Album' (Com join)
+
+            var query5 = from a in contexto.Artistas
+                         join alb in contexto.Albums
+                         on a.ArtistaId equals alb.ArtistaId
+                         where a.Nome.Contains("led")
+                         select new
+                         {
+                             NomeArtista = a.Nome,
+                             NomeAlbum = alb.Titulo
+                         };
+
+            foreach (var artista in query5)
+            {
+                Console.WriteLine("{0}\t{1}", artista.NomeArtista, artista.NomeAlbum);
+            }
+
+            Console.WriteLine("\n----------------------------\n");
+
+
+            /* Trazendo dados da entidades: 'Artista' e 'Album' (Sem join) 
+             * Também é possível ter o mesmo resultado acima sem utilizar o join. Isso é possível
+             * graças a propriedade 'Artista' dentro de Albuns
+             */
+            var query6 = from alb in contexto.Albums
+                         where alb.Artista.Nome.Contains("led")
+                         select new
+                         {
+                             NomeArtista = alb.Artista.Nome,
+                             NomeAlbum = alb.Titulo
+                         };
+
+
+            foreach (var artista in query6)
+            {
+                Console.WriteLine("{0}\t{1}", artista.NomeArtista, artista.NomeAlbum);
+            }
+        }
+
+        private static void SelectToEntitiesContains(JrTunesEntities contexto)
+        {
+
+            //Select com contains (sintaxe query)
+            Console.WriteLine("\n----------------------------\n");
+            var query3 = from a in contexto.Artistas
+                         where a.Nome.Contains("Led")
+                         select a;
+
+            foreach (var artista in query3)
+            {
+                Console.WriteLine("{1} - {0}", artista.ArtistaId, artista.Nome);
+            }
+
+
+            //Realizando a consulta acima de outra forma (sintaxe método)
+            Console.WriteLine("\n----------------------------\n");
+            var query4 = contexto.Artistas.Where(a => a.Nome.Contains("Led"));
+
+            foreach (var artista in query4)
+            {
+                Console.WriteLine("{1} - {0}", artista.ArtistaId, artista.Nome);
+            }
+        }
+
+        private static void SelectToEntitiesConsultaTop10(JrTunesEntities contexto)
+        {
+
+            /*
+             * A consulta abaixo embora pareça está trazendo para
+             * a memória toda informação e depois filtrando os dez primeiros 
+             * registros, na verdade está apenas trazendo 10 registros para 
+             * aplicação, como podemos visualizar isso???? 
+             * Basta visualizamos o log no console atráves do 
+             * comando: 'contexto.Database.Log = Console.WriteLine;'
+             *                 
+             */
+
+            /*exibe o comando que executado no BD*/
+            contexto.Database.Log = Console.WriteLine;
+
+
+            /* Consulta com Join e limitação de exibição (TOP 10)*/
+            var query2 = from g in contexto.Generos
+                         join f in contexto.Faixas
+                         on g.GeneroId equals f.GeneroId
+                         select new { f, g };
+
+            query2 = query2.Take(10);
+
+
+            foreach (var item in query2)
+            {
+                Console.WriteLine("{0} \t {1}", item.f.Nome, item.g.Nome);
+            }
+        }
+
+        private static void SelectToEntitiesConsultaSimples(JrTunesEntities contexto)
+        {
+            /*
+             * Consulta simples
+             */
+
+            var query = from g in contexto.Generos
+                        select g;
+
+            foreach (var genero in query)
+            {
+                Console.WriteLine("{0} - {1}", genero.GeneroId, genero.Nome);
+            }
+
+            Console.WriteLine("\n----------------------------\n");
         }
 
         private static void SelectNoXMLLinq()
