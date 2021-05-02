@@ -73,7 +73,7 @@ namespace JrTunes
              * Traz faixa a partir do nome do artista, se o nome do album estiver preenchido filtra o Album
              */
 
-            /*
+            
 
             var query7 = from f in contexto.Faixas
                      where f.Album.Artista.Nome.Contains(nomeArtista)
@@ -86,6 +86,7 @@ namespace JrTunes
 
             }
 
+            query7 = query7.OrderBy(q => q.Nome).ThenBy(q => q.Album.Titulo);
 
 
             foreach (var faixa in query7)
@@ -93,7 +94,7 @@ namespace JrTunes
                 Console.WriteLine("{0}\t{1}", faixa.Album.Titulo.PadRight(40), faixa.Nome);
             }
 
-            */
+            
 
 
             /*
@@ -102,6 +103,7 @@ namespace JrTunes
              *  Veja abaixo uma consulta que contém IF
              */
 
+            /*
             var query8 = from f in contexto.Faixas
                      where f.Album.Artista.Nome.Contains(nomeArtista)
                      && (!String.IsNullOrEmpty(nomeAlbum) ? f.Album.Titulo.Contains(nomeAlbum) : true)
@@ -112,7 +114,7 @@ namespace JrTunes
             {
                 Console.WriteLine("{0}\t{1}", faixa.Album.Titulo.PadRight(40), faixa.Nome);
             }
-
+            */
 
         }
 
