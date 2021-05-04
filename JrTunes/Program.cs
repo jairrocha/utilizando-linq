@@ -51,19 +51,28 @@ namespace JrTunes
 
 
                 //Traz todos os album do Led Zeppelin
-                Select_NomeArista_E_NomeAlbum(contexto, "Led Zeppelin", "");
+                //Select_NomeArista_E_NomeAlbum(contexto, "Led Zeppelin", "");
 
-                Console.WriteLine("\n=========================================\n");
+                //Console.WriteLine("\n=========================================\n");
 
                 //Traz todos os album do Led Zeppelin que contém 'Graffiti' no nome album'
-                Select_NomeArista_E_NomeAlbum(contexto, "Led Zeppelin", "Graffiti");
+                //Select_NomeArista_E_NomeAlbum(contexto, "Led Zeppelin", "Graffiti");
 
 
+
+                SelectSumLinq(contexto);
 
             }
 
 
 
+        }
+
+        private static void SelectSumLinq(JrTunesEntities contexto)
+        {
+            var quantidade = contexto.Faixas.Count(f => f.Album.Artista.Nome == "Led Zeppelin");
+
+            Console.WriteLine("Quantidade: {0}", quantidade);
         }
 
         private static void Select_NomeArista_E_NomeAlbum(JrTunesEntities contexto, string nomeArtista, string nomeAlbum)
