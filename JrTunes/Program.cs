@@ -59,8 +59,10 @@ namespace JrTunes
                 //Select_NomeArista_E_NomeAlbum(contexto, "Led Zeppelin", "Graffiti");
 
 
+                //SelectCountLinq(contexto);
 
-                SelectSumLinq(contexto);
+
+                LinqSumarizando(contexto);
 
             }
 
@@ -68,7 +70,22 @@ namespace JrTunes
 
         }
 
-        private static void SelectSumLinq(JrTunesEntities contexto)
+        private static void LinqSumarizando(JrTunesEntities contexto)
+        {
+            var query = from inf in contexto.ItemNotaFiscal
+                        where inf.Faixa.Album.Artista.Nome == "Led Zeppelin"
+                        select new { total = inf.PrecoUnitario * inf.Quantidade };
+
+
+            Console.WriteLine("Sintaxe query: Total: {0}", query.Sum(q => q.total));
+
+            var Soma = contexto.ItemNotaFiscal.Where(q => q.Faixa.Album.Artista.Nome == "Led Zeppelin")
+                             .Sum(q => (q.Quantidade * q.PrecoUnitario));
+
+            Console.WriteLine("Sintaxe método: Total: {0}", query.Sum(q => q.total));
+        }
+
+        private static void SelectCountLinq(JrTunesEntities contexto)
         {
             var quantidade = contexto.Faixas.Count(f => f.Album.Artista.Nome == "Led Zeppelin");
 
