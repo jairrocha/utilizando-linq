@@ -62,12 +62,66 @@ namespace JrTunes
                 //SelectCountLinq(contexto);
 
 
-                LinqSumarizando(contexto);
+                //LinqSumarizando(contexto);
+
+
+                LinqGoupBy(contexto);
 
             }
 
 
 
+
+        }
+
+        private static void LinqGoupBy(JrTunesEntities contexto)
+        {
+            var query = from inf in contexto.ItemNotaFiscal
+                        where inf.Faixa.Album.Artista.Nome == "Led Zeppelin"
+                        group inf by inf.Faixa.Album into agrupado
+                        orderby agrupado.Sum(a => a.Quantidade * a.PrecoUnitario)
+                            descending
+                        select new
+                        {
+                            TitulodoAlbum = agrupado.Key.Titulo,
+                            TotalPorAlbum = agrupado.Sum(a => a.Quantidade * a.PrecoUnitario)
+                        };
+
+            //foreach (var agrupado in query)
+            //{
+            //    Console.WriteLine("{0} \t {1}", agrupado.TitulodoAlbum.PadRight(40),
+            //        agrupado.TotalPorAlbum);
+            //}
+
+
+            /* Note na consulta acima que o linq nos permite agrupar 
+             * por objeto (Trecho de código: group inf by inf.Faixa.Album) "Album"
+             */
+
+            /*Note que consulta acima possui repetição de código, será que não podemos
+             * evitar essa repetição??? Sim podemos usar o 'let' veja o exemplo abaixo:
+             */
+
+            query = from inf in contexto.ItemNotaFiscal
+                    where inf.Faixa.Album.Artista.Nome == "Led Zeppelin"
+                    group inf by inf.Faixa.Album into agrupado
+                    /*===>*/
+                    let vendasporAlbum = agrupado.Sum(a => a.Quantidade * a.PrecoUnitario)
+                    orderby vendasporAlbum /*<===*/
+                    descending
+                    select new
+                    {
+                        TitulodoAlbum = agrupado.Key.Titulo,
+                        TotalPorAlbum = agrupado.Sum(a => a.Quantidade * a.PrecoUnitario)
+                    };
+
+
+
+            foreach (var agrupado in query)
+            {
+                Console.WriteLine("{0} \t {1}", agrupado.TitulodoAlbum.PadRight(40),
+                    agrupado.TotalPorAlbum);
+            }
         }
 
         private static void LinqSumarizando(JrTunesEntities contexto)
@@ -129,19 +183,19 @@ namespace JrTunes
              *  Veja abaixo uma consulta que contém IF
              */
 
-            
+
             var query8 = from f in contexto.Faixas
-                     where f.Album.Artista.Nome.Contains(nomeArtista)
-                     && (!String.IsNullOrEmpty(nomeAlbum) ? f.Album.Titulo.Contains(nomeAlbum) : true)
-                     orderby f.Album.Titulo descending, f.Nome 
-                     select f;
+                         where f.Album.Artista.Nome.Contains(nomeArtista)
+                         && (!String.IsNullOrEmpty(nomeAlbum) ? f.Album.Titulo.Contains(nomeAlbum) : true)
+                         orderby f.Album.Titulo descending, f.Nome
+                         select f;
 
 
             foreach (var faixa in query8)
             {
                 Console.WriteLine("{0}\t{1}", faixa.Album.Titulo.PadRight(40), faixa.Nome);
             }
-            
+
 
         }
 
