@@ -113,6 +113,7 @@
       <DependentUpon>JrTunes.tt</DependentUpon>
     </Compile>
     <Compile Include="Genero.cs" />
+    <Compile Include="MetodoExtensao\LinqExtension.cs" />
     <Compile Include="Musica.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

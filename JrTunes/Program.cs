@@ -1,4 +1,5 @@
 ﻿using JrTunes.Data;
+using JrTunes.MetodoExtensao;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,12 +68,61 @@ namespace JrTunes
                 //LinqGoupBy(contexto);
 
 
-                Linq_Max_Min_Avg(contexto);
+                //Linq_Max_Min_Avg(contexto);
 
+
+                /*
+                 * Podemos nos deparar com situações onde não existe uma função para o que desejamos
+                 * fazer. Um exemplo disso é a Medina, não existe essa função no LINQ. Mas podemos
+                 * Criar utilizando métódo de exensão veja o exemplo abaixo:
+                 * 
+                 */
+
+
+                /*
+                 * Criando método comum e consumindo
+                 */
+
+                var query = from nf in contexto.NotaFiscais
+                            select nf.Total;
+
+                Console.WriteLine("A Mediana (Método comum) é {0}", Mediana(query));
+
+
+
+                /*
+                 * Criando método de extensão. Note que conseguimo aplicar lambda no mesmo.
+                 */
+
+
+                //Veja a definição do mesmo na pasta 'MetodoExtensao'
+                Console.WriteLine("A Mediana (Método de extensão) é {0}", 
+                                        contexto.NotaFiscais.Mediana(nf => nf.Total));
+
+                
             }
 
 
 
+
+        }
+
+        private static Decimal Mediana(IQueryable<decimal> query)
+        {
+
+           
+            int qtndeElementos = query.Count();
+
+            var aux_elementoCentral1 = query.OrderBy(total => total).Skip(qtndeElementos / 2).First();
+            var aux_elementoCentral2 = query.OrderBy(total => total).Skip((qtndeElementos - 1) / 2).First();
+
+            if (qtndeElementos % 2 == 0)
+            {
+                return (aux_elementoCentral1 + aux_elementoCentral2) / 2;
+            }
+
+            
+            return aux_elementoCentral1;
 
         }
 
