@@ -64,14 +64,63 @@ namespace JrTunes
 
                 //LinqSumarizando(contexto);
 
+                //LinqGoupBy(contexto);
 
-                LinqGoupBy(contexto);
+
+                Linq_Max_Min_Avg(contexto);
 
             }
 
 
 
 
+        }
+
+        private static void Linq_Max_Min_Avg(JrTunesEntities contexto)
+        {
+            //MAX
+            //MIN
+            //AVG
+
+
+
+            contexto.Database.Log = Console.WriteLine; // Exibe no console query geradas
+
+            var maiorVenda = contexto.NotaFiscais.Max(nf => nf.Total);
+            var menorVenda = contexto.NotaFiscais.Min(nf => nf.Total);
+            var vendaMedia = contexto.NotaFiscais.Average(nf => nf.Total);
+
+            Console.WriteLine("A maior venda é {0},", maiorVenda);
+            Console.WriteLine("A Menor venda é {0},", menorVenda);
+            Console.WriteLine("A venda média é {0},", vendaMedia);
+
+
+            /*
+             * No console podemos observar que o procedimento acima funciona porém ele faz três 
+             * requisões ao servidor SQL. Para evitar essas viagens podemos consolidar em uma única
+             * querys as funções: Max, Min, e AVG (Média). Veja o exemplo abaixo.
+             * 
+             */
+
+
+            var vendas = (from nf in contexto.NotaFiscais
+                          group nf by 1 into agrupado
+                          select new
+                          {
+                              maiorVenda = agrupado.Max(nf => nf.Total),
+                              menorVenda = agrupado.Min(nf => nf.Total),
+                              vendaMedia = agrupado.Average(nf => nf.Total),
+                          }).Single();
+
+
+            Console.WriteLine("A maior venda é {0},", vendas.maiorVenda);
+            Console.WriteLine("A Menor venda é {0},", vendas.menorVenda);
+            Console.WriteLine("A venda média é {0},", vendas.vendaMedia);
+
+
+            /*
+             * Note que o resultado é o mesmo e só fazemos uma única requisão.
+             */
         }
 
         private static void LinqGoupBy(JrTunesEntities contexto)

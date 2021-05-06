@@ -32,7 +32,7 @@ namespace JrTunes.Data
         public virtual DbSet<Funcionario> Funcionarios { get; set; }
         public virtual DbSet<Genero> Generos { get; set; }
         public virtual DbSet<ItemNotaFiscal> ItemNotaFiscal { get; set; }
-        public virtual DbSet<NotaFiscal> NotaFiscals { get; set; }
+        public virtual DbSet<NotaFiscal> NotaFiscais { get; set; }
         public virtual DbSet<Playlist> Playlists { get; set; }
         public virtual DbSet<TipoMidia> TipoMidias { get; set; }
     }
