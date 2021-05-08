@@ -68,6 +68,47 @@ namespace JrTunes
             }
         }
 
+        public static void UtilizandoPropriedadeDeOutraQuery_UtilizandoVariaelLocalQuery()
+        {
+            /*Tazer o produto mais vendido e os clientes que 
+                         * compraram o produto mais vendido.
+                         */
+
+            using (var contexto = new JrTunesEntities())
+            {
+                var faixaQuery = from f in contexto.Faixas
+                                 where f.ItemNotaFiscals.Count() > 0
+                                 /*Variável interna da consulta (let)*/
+                                 let TotalDeVendas = f.ItemNotaFiscals.Sum(q => q.Quantidade * q.PrecoUnitario)
+                                 orderby TotalDeVendas descending
+                                 select new
+                                 {
+                                     Id = f.FaixaId,
+                                     Nome = f.Nome,
+                                     Total = TotalDeVendas
+
+                                 };
+
+                var produtoMaisVendido = faixaQuery.First();
+
+                Console.WriteLine("{0}\t{1}\t{2}", produtoMaisVendido.Id,
+                                                   produtoMaisVendido.Nome.PadRight(100),
+                                                   produtoMaisVendido.Total);
+
+                var query = from inf in contexto.ItemNotaFiscal
+                            where inf.FaixaId == produtoMaisVendido.Id
+                            select new
+                            {
+                                Cliente = inf.NotaFiscal.Cliente.PrimeiroNome + " " + inf.NotaFiscal.Cliente.Sobrenome,
+                            };
+
+                foreach (var cliente in query)
+                {
+                    Console.WriteLine("Nome do cliente: {0}", cliente.Cliente);
+                }
+
+            }
+        }
 
 
 

@@ -25,7 +25,9 @@ namespace JrTunes
 
             //curso_parte_2.Paginacao();
 
-            curso_parte_2.SubQuery();
+            //curso_parte_2.SubQuery();
+
+            curso_parte_2.UtilizandoPropriedadeDeOutraQuery_UtilizandoVariaelLocalQuery();
 
         }
 
