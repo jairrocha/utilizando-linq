@@ -67,6 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="curso_parte_1.cs" />
     <Compile Include="Data\Album.cs">
       <DependentUpon>JrTunes.tt</DependentUpon>
     </Compile>
