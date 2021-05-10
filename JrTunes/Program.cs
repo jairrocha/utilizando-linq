@@ -27,10 +27,13 @@ namespace JrTunes
 
             //curso_parte_2.SubQuery();
 
-            curso_parte_2.UtilizandoPropriedadeDeOutraQuery_UtilizandoVariaelLocalQuery();
+            //curso_parte_2.UtilizandoPropriedadeDeOutraQuery_UtilizandoVariaelLocalQuery();
+
+            curso_parte_2.Analise_de_afinidade();
 
         }
 
         
+
     }
 }

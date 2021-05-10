@@ -67,7 +67,6 @@ namespace JrTunes
 
             }
         }
-
         public static void UtilizandoPropriedadeDeOutraQuery_UtilizandoVariaelLocalQuery()
         {
             /*Tazer o produto mais vendido e os clientes que 
@@ -109,7 +108,44 @@ namespace JrTunes
 
             }
         }
+        public static void Analise_de_afinidade()
+        {
+            /* Ralizando analise de finalide (Recomendação de compra com base em outras compras)
+                         * Analise de finalidade nada mais é que uma consulta que retorna pedidos (faixas) compradas
+                         * por que qm comprou a faixa indiciada ()
+                         */
 
+            //faixa indicada
+            var faixaMusica = "Smells like Teen Spirit";
+
+            using (var contexto = new JrTunesEntities())
+            {
+
+
+                var faixaIds = contexto.Faixas.Where(q => q.Nome == faixaMusica).Select(f => f.FaixaId);
+
+
+
+                //Self join = auto join (join sobre a mesma entidade)
+                Console.WriteLine("RECOMENDAÇÃO DE COMPRA JRTUNES \n");
+
+                Console.WriteLine("\nQuem comprou a faixa: '{0}', acabou comprando tbm as faixas: \n", faixaMusica);
+
+                var query = from comprouItem in contexto.ItemNotaFiscal
+                            join comprouTbm in contexto.ItemNotaFiscal
+                                on comprouItem.NotaFiscalId equals comprouTbm.NotaFiscalId
+                            where faixaIds.Contains(comprouTbm.FaixaId) //Equivalendo ao IN
+                            && comprouItem.FaixaId != comprouTbm.FaixaId // Elimina a faixa indicada
+                            select comprouItem;
+
+                foreach (var item in query)
+                {
+                    Console.WriteLine("{0}\t{1}", item.NotaFiscalId, item.Faixa.Nome);
+                }
+
+
+            }
+        }
 
 
 
