@@ -147,7 +147,88 @@ namespace JrTunes
             }
         }
 
+        public static void ExecucaoImediata()
+        {
+            /*
+            * Execução imediada
+            */
 
+            using (var contexto = new JrTunesEntities())
+            {
+
+                var mesAniversario = 1;
+
+                while (mesAniversario < 12)
+                {
+
+
+                    Console.WriteLine("Aniversariantes do mês: {0}", mesAniversario);
+
+                    /* Qndo usamos o linq, por padão a exeução é tardia, ou seja, ela é executada 
+                     * somente na leitura (no nosso caso estava sendo executa somente no foreach).
+                     * Podemos forçar a execução da mesma usando o .ToList(), ToArray() e etc.
+                     * Isso é últimos qndo tirar uma foto do estado naquele momento e manter.
+                     * A a tardia, traz a informação atualizada no momento da leitura (for each).
+                     * Veja o exemplo abaixo
+                     */
+
+                    var lista = (from f in contexto.Funcionarios
+                                 where f.DataNascimento.Value.Month == mesAniversario
+                                 orderby f.DataNascimento.Value.Month, f.DataNascimento.Value.Day
+                                 select f).ToList(); //Consulta sendo carregada aqui
+
+
+                    /*Aqui estamos incrementando o mes aniversário observe que nesse caso não tem problema
+                     pois a consulta já foi carrada graça ao to List
+                    
+
+                    se executássemos a consulta abaixo teriamos um problema pois iriamos iriamos
+                    criar uma definiciação de consulta para o mês 2 e no for each iriamos imprimir
+                    essa definição para o mês 1.
+
+                    >>EXEMPLO:
+                    
+                    >CONSULTA:
+                    
+                     var lista = from f in contexto.Funcionarios
+                                where f.DataNascimento.Value.Month == mesAniversario
+                                orderby f.DataNascimento.Value.Month, f.DataNascimento.Value.Day
+                                select f; //Consulta não carrega. Apenas criação de definição. (Será executa na leitura)
+                     
+                    >SAIDA:
+
+                    Anicerariantes do Mês: 1
+                    18/02   Andrew Adams
+                    Anicerariantes do Mês: 2
+                    03/03   Steve Johnson
+                    Anicerariantes do Mês: 3
+                    Anicerariantes do Mês: 4
+                    29/05   Robert King
+                    Anicerariantes do Mês: 5
+                    Anicerariantes do Mês: 6
+                    01/07   Michael Mitchell
+                    Anicerariantes do Mês: 7
+                    29/08   Jane Peacock
+                    Anicerariantes do Mês: 8
+                    19/09   Margaret Park
+                    Anicerariantes do Mês: 9
+                    Anicerariantes do Mês: 10
+                    Anicerariantes do Mês: 11
+                    08/12   Nancy Edwards
+
+                     */
+
+
+                    mesAniversario++;
+
+                    foreach (var f in lista)
+                    {
+                        Console.WriteLine("{0:dd/MM}\t{1} {2}", f.DataNascimento, f.PrimeiroNome, f.Sobrenome);
+                    }
+
+                }
+            }
+        }
 
 
 

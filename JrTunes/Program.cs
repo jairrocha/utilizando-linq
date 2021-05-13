@@ -29,11 +29,15 @@ namespace JrTunes
 
             //curso_parte_2.UtilizandoPropriedadeDeOutraQuery_UtilizandoVariaelLocalQuery();
 
-            curso_parte_2.Analise_de_afinidade();
+            //curso_parte_2.Analise_de_afinidade();
+
+
+            curso_parte_2.ExecucaoImediata();
 
         }
 
         
+
 
     }
 }
