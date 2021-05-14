@@ -2,15 +2,21 @@
 using JrTunes.MetodoExtensao;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using ZXing;
 
 namespace JrTunes
 {
     partial class Program
     {
+        
+
         static void Main(string[] args)
         {
             /* Part1 do curso
@@ -31,13 +37,12 @@ namespace JrTunes
 
             //curso_parte_2.Analise_de_afinidade();
 
+            //curso_parte_2.ExecucaoImediata();
 
-            curso_parte_2.ExecucaoImediata();
+            curso_parte_2.Paralelismo_na_criacao_de_qrcode();
 
         }
 
         
-
-
     }
 }

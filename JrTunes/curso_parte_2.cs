@@ -1,9 +1,13 @@
 ﻿using JrTunes.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZXing;
 
 namespace JrTunes
 {
@@ -230,7 +234,77 @@ namespace JrTunes
             }
         }
 
+        public static void Paralelismo_na_criacao_de_qrcode()
+        {
 
+           /*
+           
+           Install-Package ZXing.Net (Biblioteca de QRCode)
+           Add reference: System.Drawing (Nescessário para gerar imagens)
+           Site que lê qrcode https://webqr.com/ 
+           
+            */
+
+
+            var Imagens = "IMG";
+
+            var barcodWriter = new BarcodeWriter();
+
+            barcodWriter.Format = BarcodeFormat.QR_CODE;
+            barcodWriter.Options = new ZXing.Common.EncodingOptions
+            {
+                Width = 100,
+                Height = 100
+            };
+
+
+            if (!Directory.Exists(Imagens)) // Verifica se diretório existe
+                Directory.CreateDirectory(Imagens); // Cria diretório
+
+            using (var contexto = new JrTunesEntities())
+            {
+                var queryFaixas = from f in contexto.Faixas
+                                  select f;
+
+                var listaFaixas = queryFaixas.ToList();
+
+
+                Stopwatch stopwatch = Stopwatch.StartNew(); //Inicia cronômetro
+
+                //Sem o AsParallel: 16 segundos
+                //com o AsParallel: 8 segundos
+
+                var queryCodigos = listaFaixas
+                                   .AsParallel() //Pareliza a execução entre vário núcleos (roda mais rápido)
+                                   .Select(f => new
+                                   {
+                                       Arquivo = string.Format("{0}\\{1}.jpg", Imagens, f.FaixaId),
+                                       Imagem = barcodWriter.Write(string.Format("jrtunes.com/faixa/{0}", f.FaixaId))
+                                   });
+
+                int contagem = queryCodigos.Count();
+
+
+                //foreach (var item in queryCodigos)
+                //{
+                //    item.Imagem.Save(item.Arquivo, ImageFormat.Jpeg); // Salva imagem
+                //}
+
+                //Paraleizando o foreach. Faz com que a tarefa seja divida em núcleos
+                queryCodigos.ForAll(item => item.Imagem.Save(item.Arquivo, ImageFormat.Jpeg));
+
+
+                stopwatch.Stop(); //Para cronômetro
+
+                Console.WriteLine("Código gerados: {0} segundos em {1} segundos",
+                                    contagem,
+                                    stopwatch.ElapsedMilliseconds / 1000); //Exibe cronômetro
+
+            }
+
+            //imprimentdo texto no qrcode e salando imagem
+            //barcodWriter.Write("Meu teste").Save("QRCODE.jpg", ImageFormat.Jpeg);
+        }
 
 
 
