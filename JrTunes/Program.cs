@@ -39,10 +39,13 @@ namespace JrTunes
 
             //curso_parte_2.ExecucaoImediata();
 
-            curso_parte_2.Paralelismo_na_criacao_de_qrcode();
+            //curso_parte_2.Paralelismo_na_criacao_de_qrcode();
+
+            curso_parte_2.Consumindo_Stored_Procedure();
 
         }
 
         
+
     }
 }

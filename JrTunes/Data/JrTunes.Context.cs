@@ -12,6 +12,8 @@ namespace JrTunes.Data
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class JrTunesEntities : DbContext
     {
@@ -32,8 +34,17 @@ namespace JrTunes.Data
         public virtual DbSet<Funcionario> Funcionarios { get; set; }
         public virtual DbSet<Genero> Generos { get; set; }
         public virtual DbSet<ItemNotaFiscal> ItemNotaFiscal { get; set; }
-        public virtual DbSet<NotaFiscal> NotaFiscais { get; set; }
+        public virtual DbSet<NotaFiscal> NotaFiscals { get; set; }
         public virtual DbSet<Playlist> Playlists { get; set; }
         public virtual DbSet<TipoMidia> TipoMidias { get; set; }
+    
+        public virtual ObjectResult<ps_Itens_Por_Cliente_Result> ps_Itens_Por_Cliente(Nullable<int> clienteId)
+        {
+            var clienteIdParameter = clienteId.HasValue ?
+                new ObjectParameter("clienteId", clienteId) :
+                new ObjectParameter("clienteId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<ps_Itens_Por_Cliente_Result>("ps_Itens_Por_Cliente", clienteIdParameter);
+        }
     }
 }

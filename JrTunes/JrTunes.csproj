@@ -118,6 +118,9 @@
     <Compile Include="Data\Playlist.cs">
       <DependentUpon>JrTunes.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\ps_Itens_Por_Cliente_Result.cs">
+      <DependentUpon>JrTunes.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\TipoMidia.cs">
       <DependentUpon>JrTunes.tt</DependentUpon>
     </Compile>

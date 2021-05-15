@@ -69,7 +69,7 @@ namespace JrTunes
                  * Criando método comum e consumindo
                  */
 
-                var query = from nf in contexto.NotaFiscais
+                var query = from nf in contexto.NotaFiscals
                             select nf.Total;
 
                 Console.WriteLine("A Mediana (Método comum) é {0}", Mediana(query));
@@ -83,7 +83,7 @@ namespace JrTunes
 
                 //Veja a definição do mesmo na pasta 'MetodoExtensao'
                 Console.WriteLine("A Mediana (Método de extensão) é {0}",
-                                        contexto.NotaFiscais.Mediana(nf => nf.Total));
+                                        contexto.NotaFiscals.Mediana(nf => nf.Total));
 
 
             }
@@ -122,9 +122,9 @@ namespace JrTunes
 
             contexto.Database.Log = Console.WriteLine; // Exibe no console query geradas
 
-            var maiorVenda = contexto.NotaFiscais.Max(nf => nf.Total);
-            var menorVenda = contexto.NotaFiscais.Min(nf => nf.Total);
-            var vendaMedia = contexto.NotaFiscais.Average(nf => nf.Total);
+            var maiorVenda = contexto.NotaFiscals.Max(nf => nf.Total);
+            var menorVenda = contexto.NotaFiscals.Min(nf => nf.Total);
+            var vendaMedia = contexto.NotaFiscals.Average(nf => nf.Total);
 
             Console.WriteLine("A maior venda é {0},", maiorVenda);
             Console.WriteLine("A Menor venda é {0},", menorVenda);
@@ -139,7 +139,7 @@ namespace JrTunes
              */
 
 
-            var vendas = (from nf in contexto.NotaFiscais
+            var vendas = (from nf in contexto.NotaFiscals
                           group nf by 1 into agrupado
                           select new
                           {

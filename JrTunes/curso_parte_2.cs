@@ -22,7 +22,7 @@ namespace JrTunes
 
             using (var contexto = new JrTunesEntities())
             {
-                int numeroDeLinhas = contexto.NotaFiscais.Count();
+                int numeroDeLinhas = contexto.NotaFiscals.Count();
 
                 int numeroDePaginas = (int)Math.Ceiling((decimal)(numeroDeLinhas / TAMANHO_PAGINA));
 
@@ -45,9 +45,9 @@ namespace JrTunes
 
                 /*Trazer vendas com valor acima da média*/
 
-                decimal queryVendaMedia = contexto.NotaFiscais.Average(q => q.Total);
+                decimal queryVendaMedia = contexto.NotaFiscals.Average(q => q.Total);
 
-                var query = from nf in contexto.NotaFiscais
+                var query = from nf in contexto.NotaFiscals
                             where nf.Total > queryVendaMedia //<----SubQuery
                             orderby nf.Total descending
                             select new
@@ -150,7 +150,6 @@ namespace JrTunes
 
             }
         }
-
         public static void ExecucaoImediata()
         {
             /*
@@ -233,7 +232,6 @@ namespace JrTunes
                 }
             }
         }
-
         public static void Paralelismo_na_criacao_de_qrcode()
         {
 
@@ -305,6 +303,62 @@ namespace JrTunes
             //imprimentdo texto no qrcode e salando imagem
             //barcodWriter.Write("Meu teste").Save("QRCODE.jpg", ImageFormat.Jpeg);
         }
+        public static void Consumindo_Stored_Procedure()
+        {
+            //Consumindo stored procedure com o LINQ
+
+            //1)Compilar procedure no BD
+
+            /* 
+            CREATE PROCEDURE[dbo].[ps_Itens_Por_Cliente] @clienteId int = 0
+            AS
+            BEGIN
+
+                SELECT
+                i.FaixaId,
+                i.ItemNotaFiscalId,
+                i.NotaFiscalId,
+                i.PrecoUnitario,
+                i.Quantidade,
+                i.PrecoUnitario* i.Quantidade As Total,
+                n.DataNotaFiscal,
+                f.Nome
+                FROM ItemNotaFiscal i
+                JOIN NotaFiscal n ON i.NotaFiscalId = n.NotaFiscalId
+                JOIN Faixa f ON f.FaixaId = i.FaixaId
+                WHERE n.ClienteId = @clienteId
+            END
+            */
+
+            //2)Atualizar o JrTunes.edmx para que a procedure seja adicionada ao modelo
+
+
+            int clienteId = 17;
+
+            using (var contexto = new JrTunesEntities())
+            {
+
+                var vendasPorCliente =
+                from v in contexto.ps_Itens_Por_Cliente(clienteId)
+                group v by new { v.DataNotaFiscal.Year, v.DataNotaFiscal.Month }
+                into agrupado
+                orderby agrupado.Key.Year, agrupado.Key.Month
+                select new
+                {
+                    Ano = agrupado.Key.Year,
+                    Mes = agrupado.Key.Month,
+                    Total = agrupado.Sum(a => a.Total)
+                };
+
+                foreach (var item in vendasPorCliente)
+                {
+                    Console.WriteLine("{0}\t{1}\t{2}", item.Ano, item.Mes, item.Total);
+                }
+
+
+            }
+        }
+
 
 
 
@@ -324,7 +378,7 @@ namespace JrTunes
 
             //contexto.Database.Log = Console.WriteLine;
 
-            var query = from nf in contexto.NotaFiscais
+            var query = from nf in contexto.NotaFiscals
                         orderby nf.NotaFiscalId /*o 'Skip' só funciona se a conulta estiver ordenada*/
                         select new
                         {
